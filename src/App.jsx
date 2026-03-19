@@ -128,147 +128,97 @@ export default function App() {
 
   return (
     <div style={page}>
-      <section
+<section
+  style={{
+    padding: "110px 0 100px",
+    borderBottom: "1px solid rgba(255,255,255,0.05)",
+    background:
+      "radial-gradient(circle at top, rgba(201,166,70,0.12), transparent 35%), #08101f",
+  }}
+>
+  <div style={container}>
+    <div style={{ maxWidth: "1000px" }}>
+      
+      <div style={eyebrow}>
+        Logistics Decision Intelligence Platform
+      </div>
+
+      <h1
         style={{
-          padding: "96px 0 82px",
-          borderBottom: "1px solid rgba(255,255,255,0.05)",
-          background:
-            "radial-gradient(circle at top left, rgba(201,166,70,0.10), transparent 28%), #08101f",
+          fontSize: "clamp(60px, 10vw, 120px)",
+          lineHeight: 0.92,
+          margin: 0,
+          letterSpacing: "-1.5px",
         }}
       >
-        <div style={container}>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "1.15fr 0.85fr",
-              gap: "36px",
-              alignItems: "center",
-            }}
-          >
-            <div>
-              <div style={eyebrow}>Logistics Decision Intelligence</div>
+        AI THAT MAKES
+        <br />
+        <span style={{ color: "#c9a646" }}>
+          LOGISTICS DECISIONS
+        </span>
+        <br />
+        FOR YOU.
+      </h1>
 
-              <h1
-                style={{
-                  fontSize: "clamp(52px, 9vw, 102px)",
-                  lineHeight: 0.94,
-                  margin: 0,
-                  color: "#c9a646",
-                  letterSpacing: "-1.4px",
-                }}
-              >
-                AI that designs
-                <br />
-                and optimizes
-                <br />
-                your logistics
-                <br />
-                strategy.
-              </h1>
+      <p
+        style={{
+          ...p,
+          fontSize: "22px",
+          maxWidth: "720px",
+          marginTop: "28px",
+          marginBottom: "42px",
+        }}
+      >
+        LogiStart simulates scenarios, benchmarks the market,
+        evaluates suppliers, and recommends the best logistics
+        strategy instantly.
+      </p>
 
-              <p
-                style={{
-                  ...p,
-                  fontSize: "24px",
-                  maxWidth: "860px",
-                  marginTop: "26px",
-                  marginBottom: "34px",
-                }}
-              >
-                LogiStart goes beyond existing routes. It analyzes scenarios,
-                benchmarks the market, evaluates suppliers, designs new network
-                options, and recommends the best logistics strategy instantly.
-              </p>
+      <div
+        style={{
+          display: "flex",
+          gap: "16px",
+          flexWrap: "wrap",
+          marginBottom: "50px",
+        }}
+      >
+        <button style={goldButton}>
+          ▶ See Decision Demo
+        </button>
 
-              <div
-                style={{
-                  display: "flex",
-                  gap: "14px",
-                  flexWrap: "wrap",
-                  marginBottom: "42px",
-                }}
-              >
-                <button style={goldButton}>See Decision Demo</button>
-                <button style={ghostButton}>Access Dashboard</button>
-              </div>
+        <button style={ghostButton}>
+          Access Dashboard
+        </button>
+      </div>
 
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(3, minmax(120px, 1fr))",
-                  gap: "18px",
-                  maxWidth: "760px",
-                }}
-              >
-                {metrics.map((item) => (
-                  <div
-                    key={item.label}
-                    style={{
-                      borderTop: "1px solid rgba(201,166,70,0.2)",
-                      paddingTop: "20px",
-                    }}
-                  >
-                    <div
-                      style={{
-                        color: "#c9a646",
-                        fontSize: "56px",
-                        fontWeight: 800,
-                        lineHeight: 1,
-                        marginBottom: "12px",
-                      }}
-                    >
-                      {item.value}
-                    </div>
-                    <div style={{ color: "#f5f7fb", fontSize: "18px", lineHeight: 1.4 }}>
-                      {item.label}
-                    </div>
-                  </div>
-                ))}
-              </div>
+      <div
+        style={{
+          display: "flex",
+          gap: "60px",
+          flexWrap: "wrap",
+        }}
+      >
+        {metrics.map((item) => (
+          <div key={item.label}>
+            <div
+              style={{
+                fontSize: "48px",
+                fontWeight: 800,
+                color: "#c9a646",
+              }}
+            >
+              {item.value}
             </div>
-
-            <div style={card}>
-              <div style={eyebrow}>What the platform actually does</div>
-              <h3 style={{ fontSize: "30px", lineHeight: 1.2, marginTop: 0, marginBottom: "16px" }}>
-                From routes to strategy
-              </h3>
-
-              <p style={{ ...p, marginTop: 0 }}>
-                LogiStart is not limited to optimizing current lanes. It acts as
-                a logistics strategist.
-              </p>
-
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "14px",
-                  marginTop: "24px",
-                }}
-              >
-                {[
-                  "Evaluates current routes and logistics spend",
-                  "Designs new route and network alternatives",
-                  "Tests warehouse and transport synergies",
-                  "Compares global, local, and hybrid provider models",
-                  "Benchmarks market prices before supplier decisions",
-                  "Produces an executive recommendation, not just a dashboard",
-                ].map((item) => (
-                  <div
-                    key={item}
-                    style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}
-                  >
-                    <span style={{ color: "#c9a646", fontWeight: 800, marginTop: "2px" }}>
-                      ✓
-                    </span>
-                    <span style={{ ...p, margin: 0, fontSize: "16px" }}>{item}</span>
-                  </div>
-                ))}
-              </div>
+            <div style={{ color: "#cfd6e4", fontSize: "16px" }}>
+              {item.label}
             </div>
           </div>
-        </div>
-      </section>
+        ))}
+      </div>
+
+    </div>
+  </div>
+</section>
 
       <section style={section}>
         <div style={container}>

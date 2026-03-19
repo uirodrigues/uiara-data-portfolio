@@ -14,7 +14,14 @@ export default function App() {
           AI that designs and optimizes your logistics strategy.
         </h1>
 
-        <p style={{ fontSize: "20px", lineHeight: 1.6, maxWidth: "800px", marginBottom: "32px" }}>
+        <p
+          style={{
+            fontSize: "20px",
+            lineHeight: 1.6,
+            maxWidth: "800px",
+            marginBottom: "32px",
+          }}
+        >
           LogiStart analyzes scenarios, benchmarks the market, evaluates suppliers,
           and recommends the best logistics strategy instantly.
         </p>

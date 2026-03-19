@@ -427,7 +427,7 @@ export default function App() {
                 gap: "14px",
                 flexWrap: "wrap",
               }}
-          
+           >                        
               <button style={goldButton}>Start Your First Strategic Assessment</button>
               <button style={ghostButton}>See the Executive Output</button>
             </div>

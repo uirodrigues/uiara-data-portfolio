@@ -1,78 +1,38 @@
 export default function App() {
   return (
     <div className="page">
-      <section className="hero">
-        <div className="container">
-          <p className="eyebrow">LOGISTICS DECISION INTELLIGENCE</p>
+      <section className="container" style={{ padding: "80px 20px" }}>
+        
+        <h1 style={{ fontSize: "42px", color: "#C9A646" }}>
+          AI that designs and optimizes your logistics strategy.
+        </h1>
 
-          <h1>
-            AI that designs and optimizes
-            <br />
-            your logistics strategy.
-          </h1>
+        <p style={{ marginTop: "20px", color: "#ccc", fontSize: "18px" }}>
+          LogiStart analyzes scenarios, benchmarks the market, evaluates suppliers,
+          and recommends the best logistics strategy instantly.
+        </p>
 
-          <p className="subtitle">
-            LogiStart analyzes scenarios, benchmarks the market, evaluates
-            suppliers, and recommends the best logistics strategy instantly.
-          </p>
+        <div style={{ marginTop: "30px", display: "flex", gap: "10px" }}>
+          <button style={{ background: "#C9A646", color: "black", padding: "12px 20px", borderRadius: "8px" }}>
+            ▶ See Decision Demo
+          </button>
 
-          <div className="ctaRow">
-            <a href="#" className="btn btnGold">▶ See Decision Demo</a>
-            <a href="#" className="btn btnGhost">Access Dashboard</a>
-          </div>
-
-          <div className="stats">
-            <div>
-              <strong>10x</strong>
-              <span>faster decisions</span>
-            </div>
-            <div>
-              <strong>18%</strong>
-              <span>avg. cost reduction</span>
-            </div>
-            <div>
-              <strong>91%</strong>
-              <span>confidence score</span>
-            </div>
-          </div>
+          <button style={{ border: "1px solid #C9A646", color: "#C9A646", padding: "12px 20px", borderRadius: "8px" }}>
+            Access Dashboard
+          </button>
         </div>
-      </section>
 
-      <section className="section">
-        <div className="container narrow">
-          <h2>Logistics decisions are broken</h2>
-          <p>
-            Today, companies rely on fragmented data, manual analysis, and static tools.
-            Decisions are slow, inconsistent, and often suboptimal.
-          </p>
-        </div>
-      </section>
+        <div style={{ marginTop: "40px" }}>
+          <h2>10x</h2>
+          <p>faster decisions</p>
 
-      <section className="section alt">
-        <div className="container narrow">
-          <h2>From routes to strategy</h2>
-          <p>
-            LogiStart does not just compare existing routes. It designs new ones,
-            evaluates sourcing strategies, and optimizes your entire logistics network.
-          </p>
-        </div>
-      </section>
+          <h2>18%</h2>
+          <p>avg. cost reduction</p>
 
-      <section className="section">
-        <div className="container narrow">
-          <h2>Built for decision-makers</h2>
-          <p>
-            Whether you are managing procurement, logistics, or supply chain strategy,
-            LogiStart gives you clarity, speed, and confidence.
-          </p>
+          <h2>91%</h2>
+          <p>confidence score</p>
         </div>
-      </section>
 
-      <section className="finalCta">
-        <div className="container narrow">
-          <h2>Start making better logistics decisions today</h2>
-          <a href="#" className="btn btnGold">Get Started</a>
-        </div>
       </section>
     </div>
   );

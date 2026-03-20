@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
 
 /* ============================================================
 DESIGN TOKENS - Premium Dark Theme
@@ -24,7 +24,7 @@ const C = {
 };
 
 /* ============================================================
-GLOBAL CSS - Premium Animations & Styles
+GLOBAL CSS INJECTION
 ============================================================ */
 const GLOBAL_CSS = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap');
@@ -44,7 +44,6 @@ body {
   background: ${C.bg};
   color: ${C.white};
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 ::-webkit-scrollbar {
@@ -59,45 +58,13 @@ body {
 }
 
 @keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes slideInRight {
-  from {
-    opacity: 0;
-    transform: translateX(40px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes blink {
@@ -106,30 +73,13 @@ body {
 }
 
 @keyframes glowPulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 rgba(201, 166, 70, 0.4);
-  }
-  50% {
-    box-shadow: 0 0 20px 5px rgba(201, 166, 70, 0.2);
-  }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 166, 70, 0.4); }
+  50% { box-shadow: 0 0 20px 5px rgba(201, 166, 70, 0.2); }
 }
 
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-5px);
-  }
-}
-
-@keyframes borderGlow {
-  0%, 100% {
-    border-color: ${C.borderLight};
-  }
-  50% {
-    border-color: ${C.gold};
-  }
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
 .reveal {
@@ -145,7 +95,6 @@ body {
 .reveal-delay-2.in { transition-delay: 0.2s; }
 .reveal-delay-3.in { transition-delay: 0.3s; }
 .reveal-delay-4.in { transition-delay: 0.4s; }
-.reveal-delay-5.in { transition-delay: 0.5s; }
 
 .container {
   max-width: 1400px;
@@ -154,26 +103,19 @@ body {
 }
 
 @media (max-width: 1024px) {
-  .container {
-    padding: 0 32px;
-  }
+  .container { padding: 0 32px; }
 }
-
 @media (max-width: 768px) {
-  .container {
-    padding: 0 24px;
-  }
+  .container { padding: 0 24px; }
 }
 
 .section {
-  padding: 120px 0;
+  padding: 100px 0;
   border-bottom: 1px solid ${C.border};
 }
-
 .section-alt {
   background: ${C.bgDark};
 }
-
 .section:last-child {
   border-bottom: none;
 }
@@ -187,20 +129,18 @@ body {
   color: ${C.bgDark};
   border: none;
   border-radius: 100px;
-  padding: 16px 36px;
+  padding: 14px 32px;
   font-family: 'Inter', sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
-  letter-spacing: -0.2px;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+  transition: all 0.3s ease;
   text-decoration: none;
 }
-
 .btn-primary:hover {
   background: ${C.goldLight};
   transform: translateY(-2px);
-  box-shadow: 0 20px 40px rgba(201, 166, 70, 0.25);
+  box-shadow: 0 10px 30px rgba(201, 166, 70, 0.25);
 }
 
 .btn-secondary {
@@ -212,15 +152,13 @@ body {
   color: ${C.white};
   border: 1px solid ${C.borderLight};
   border-radius: 100px;
-  padding: 16px 36px;
+  padding: 14px 32px;
   font-family: 'Inter', sans-serif;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-  text-decoration: none;
+  transition: all 0.3s ease;
 }
-
 .btn-secondary:hover {
   border-color: ${C.gold};
   color: ${C.gold};
@@ -238,7 +176,6 @@ body {
   position: relative;
   padding-left: 24px;
 }
-
 .eyebrow::before {
   content: '';
   position: absolute;
@@ -255,10 +192,8 @@ h1 {
   font-weight: 700;
   letter-spacing: -2px;
   line-height: 1.1;
-  margin-bottom: 32px;
-  color: ${C.white};
+  margin-bottom: 24px;
 }
-
 h2 {
   font-size: clamp(36px, 5vw, 56px);
   font-weight: 700;
@@ -266,11 +201,9 @@ h2 {
   line-height: 1.1;
   margin-bottom: 24px;
 }
-
 h3 {
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 600;
-  letter-spacing: -0.3px;
   margin-bottom: 12px;
 }
 
@@ -281,20 +214,10 @@ h3 {
   max-width: 560px;
 }
 
-@media (max-width: 768px) {
-  .section {
-    padding: 80px 0;
-  }
-  .lead {
-    font-size: 16px;
-  }
-}
-
 .stat-number {
   font-size: 48px;
   font-weight: 700;
   letter-spacing: -2px;
-  line-height: 1;
   color: ${C.white};
 }
 
@@ -305,13 +228,57 @@ h3 {
   color: transparent;
 }
 
-.card-hover {
-  transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+.card-premium {
+  background: ${C.bgCard};
+  border: 1px solid ${C.border};
+  border-radius: 24px;
+  transition: all 0.3s ease;
 }
-.card-hover:hover {
-  transform: translateY(-4px);
+.card-premium:hover {
   border-color: ${C.gold};
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  transform: translateY(-4px);
+}
+
+.input-premium {
+  width: 100%;
+  background: ${C.bgDark};
+  color: ${C.white};
+  border: 1px solid ${C.border};
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.3s ease;
+  outline: none;
+}
+.input-premium:focus {
+  border-color: ${C.gold};
+  box-shadow: 0 0 0 2px ${C.goldDim};
+}
+
+.select-premium {
+  width: 100%;
+  background: ${C.bgDark};
+  color: ${C.white};
+  border: 1px solid ${C.border};
+  border-radius: 12px;
+  padding: 14px 16px;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  outline: none;
+}
+.select-premium:focus {
+  border-color: ${C.gold};
+}
+
+.label-premium {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: ${C.gray2};
+  margin-bottom: 8px;
+  letter-spacing: 0.5px;
 }
 `;
 
@@ -349,7 +316,6 @@ function useTypewriter(words, active) {
 
   useEffect(() => {
     if (!active) return;
-
     const word = words[wordIndex];
     const timeout = setTimeout(() => {
       if (!isDeleting) {
@@ -370,7 +336,6 @@ function useTypewriter(words, active) {
         }
       }
     }, isDeleting ? 50 : 80);
-
     return () => clearTimeout(timeout);
   }, [charIndex, isDeleting, wordIndex, words, active]);
 
@@ -380,12 +345,6 @@ function useTypewriter(words, active) {
 /* ============================================================
 COMPONENTS
 ============================================================ */
-function Button({ variant = "primary", children, style, href, onClick }) {
-  const cls = variant === "primary" ? "btn-primary" : "btn-secondary";
-  if (href) return <a className={cls} href={href} style={style}>{children}</a>;
-  return <button className={cls} onClick={onClick} style={style}>{children}</button>;
-}
-
 function Logo() {
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -410,10 +369,7 @@ function Logo() {
   );
 }
 
-/* ============================================================
-NAVIGATION
-============================================================ */
-function Nav() {
+function Nav({ onNavigate }) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -441,18 +397,65 @@ function Nav() {
     }}>
       <Logo />
       <div style={{ display: "flex", gap: 12 }}>
-        <Button variant="secondary" style={{ padding: "10px 24px" }}>Sign In</Button>
-        <Button variant="primary" style={{ padding: "10px 24px" }}>Request Demo →</Button>
+        <button className="btn-secondary" style={{ padding: "10px 24px" }}>Sign In</button>
+        <button className="btn-primary" style={{ padding: "10px 24px" }} onClick={() => onNavigate("assessment")}>
+          Request Demo →
+        </button>
       </div>
     </nav>
   );
 }
 
 /* ============================================================
-HERO SECTION
+MAIN APP
 ============================================================ */
-function HeroSection() {
-  const [ref, visible] = useInView(0.1);
+export default function App() {
+  const [screen, setScreen] = useState("home");
+  const [form, setForm] = useState({
+    projectType: "new_project",
+    origin: "",
+    destination: "",
+    volume: "",
+    duration: "",
+    mode: "hybrid",
+    priority: "cost",
+    serviceLevel: "standard",
+    notes: "",
+  });
+
+  function updateField(field, value) {
+    setForm((prev) => ({ ...prev, [field]: value }));
+  }
+
+  const decision = useMemo(() => generateDecision(form), [form]);
+
+  const metrics = [
+    { value: "10x", label: "faster decisions" },
+    { value: "18%", label: "avg. cost reduction" },
+    { value: "91%", label: "confidence score" },
+  ];
+
+  // Telas
+  if (screen === "assessment") {
+    return <AssessmentScreen form={form} updateField={updateField} setScreen={setScreen} />;
+  }
+
+  if (screen === "result") {
+    return <ResultScreen decision={decision} form={form} setScreen={setScreen} />;
+  }
+
+  return <HomeScreen setScreen={setScreen} metrics={metrics} />;
+}
+
+/* ============================================================
+HOME SCREEN (Premium)
+============================================================ */
+function HomeScreen({ setScreen, metrics }) {
+  const [heroRef, heroVisible] = useInView(0.1);
+  const [categoryRef, categoryVisible] = useInView();
+  const [capabilitiesRef, capabilitiesVisible] = useInView();
+  const [positioningRef, positioningVisible] = useInView();
+
   const typewriterWords = [
     "existing logistics operations",
     "new logistics projects",
@@ -460,640 +463,681 @@ function HeroSection() {
     "network scenarios",
     "AI negotiation",
   ];
-  const typedText = useTypewriter(typewriterWords, visible);
+  const typedText = useTypewriter(typewriterWords, heroVisible);
 
-  return (
-    <section ref={ref} style={{
-      minHeight: "100vh",
-      display: "flex",
-      alignItems: "center",
-      padding: "120px 0 80px",
-      position: "relative",
-      overflow: "hidden",
-    }}>
-      {/* Premium background effects */}
-      <div style={{
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        background: "radial-gradient(circle at 20% 30%, rgba(201, 166, 70, 0.05) 0%, transparent 50%)",
-        pointerEvents: "none",
-      }} />
-      
-      <div className="container" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center" }}>
-        {/* Left Side */}
-        <div>
-          <div className={`reveal ${visible ? "in" : ""}`}>
-            <div className="eyebrow">AUTONOMOUS DECISION ENGINE</div>
-          </div>
-          <h1 className={`reveal reveal-delay-1 ${visible ? "in" : ""}`}>
-            AI that designs, sources, and negotiates<br />
-            your logistics strategy
-          </h1>
-          
-          <div className={`reveal reveal-delay-2 ${visible ? "in" : ""}`} style={{ marginBottom: 24 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-              <span style={{ fontSize: 20, fontWeight: 500, color: C.gray1 }}>for</span>
-              <span style={{
-                fontSize: 20,
-                fontWeight: 600,
-                color: C.gold,
-                minHeight: 48,
-                background: C.goldDim,
-                padding: "8px 16px",
-                borderRadius: 100,
-              }}>
-                {typedText || " "}
-              </span>
-              <span style={{ display: "inline-block", width: 3, height: 28, background: C.gold, animation: "blink 1s infinite", marginLeft: 4 }} />
-            </div>
-          </div>
-          
-          <p className={`lead reveal reveal-delay-3 ${visible ? "in" : ""}`} style={{ marginBottom: 40 }}>
-            LogiStart goes beyond route optimization. It creates scenarios, sources suppliers, 
-            simulates outcomes, and delivers the best logistics decision automatically.
-          </p>
-          
-          <div className={`reveal reveal-delay-4 ${visible ? "in" : ""}`} style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-            <Button variant="primary">See a Real Decision →</Button>
-            <Button variant="secondary">Run a Strategic Simulation</Button>
-          </div>
-        </div>
-
-        {/* Right Side - Dashboard Mockup */}
-        <div className={`reveal reveal-delay-3 ${visible ? "in" : ""}`} style={{
-          background: C.bgCard,
-          border: `1px solid ${C.borderLight}`,
-          borderRadius: 32,
-          overflow: "hidden",
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)",
-          animation: visible ? "glowPulse 3s ease-in-out infinite" : "none",
-        }}>
-          {/* Mockup Header */}
-          <div style={{
-            padding: "20px 24px",
-            borderBottom: `1px solid ${C.border}`,
-            background: C.bgElevated,
-          }}>
-            <div style={{ display: "flex", gap: 8 }}>
-              {[C.red, C.gold, C.green].map((color, i) => (
-                <div key={i} style={{ width: 12, height: 12, borderRadius: "50%", background: color }} />
-              ))}
-            </div>
-          </div>
-          
-          {/* Mockup Content */}
-          <div style={{ padding: "28px" }}>
-            <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 12, color: C.gray3, marginBottom: 8 }}>SCENARIO COMPARISON</div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
-                {["Scenario A", "Scenario B", "Scenario C"].map((scenario, i) => (
-                  <div key={i} style={{
-                    padding: "12px",
-                    background: C.bgDark,
-                    borderRadius: 12,
-                    border: i === 1 ? `1px solid ${C.gold}` : `1px solid ${C.border}`,
-                  }}>
-                    <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>{scenario}</div>
-                    <div style={{ fontSize: 10, color: C.gray2 }}>Cost: ${i === 1 ? "1.24M" : i === 0 ? "1.42M" : "1.38M"}</div>
-                    <div style={{ fontSize: 10, color: C.gray2 }}>Risk: {i === 1 ? "Low" : "Medium"}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div style={{ marginBottom: 24, padding: "16px", background: C.bgDark, borderRadius: 16 }}>
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
-                <span style={{ fontSize: 12, color: C.gray3 }}>COST VS MARKET BENCHMARK</span>
-                <span style={{ fontSize: 20, fontWeight: 700, color: C.green }}>-18%</span>
-              </div>
-              <div style={{ height: 4, background: C.border, borderRadius: 2, overflow: "hidden" }}>
-                <div style={{ width: "82%", height: "100%", background: C.green, borderRadius: 2 }} />
-              </div>
-            </div>
-
-            <div style={{ marginBottom: 24 }}>
-              <div style={{ fontSize: 12, color: C.gray3, marginBottom: 8 }}>SUPPLIER RANKING</div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {["TransLog Brasil", "FastMove Log", "Logística Sul"].map((sup, i) => (
-                  <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "8px 12px", background: C.bgDark, borderRadius: 10 }}>
-                    <span style={{ fontSize: 13 }}>{sup}</span>
-                    <span style={{ fontSize: 12, color: i === 0 ? C.gold : C.gray2 }}>{i === 0 ? "✓ Recommended" : ""}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div style={{
-              padding: "20px",
-              background: C.goldDim,
-              borderRadius: 16,
-              border: `1px solid ${C.gold}`,
-              marginBottom: 16,
-            }}>
-              <div style={{ fontSize: 10, color: C.gold, marginBottom: 4 }}>RECOMMENDED STRATEGY</div>
-              <div style={{ fontSize: 18, fontWeight: 700, marginBottom: 8 }}>Hybrid Network (2 DCs + Cross-dock)</div>
-              <div style={{ display: "flex", gap: 16 }}>
-                <div><span style={{ fontSize: 11, color: C.gray3 }}>Confidence</span><br /><span style={{ fontSize: 16, fontWeight: 600 }}>94/100</span></div>
-                <div><span style={{ fontSize: 11, color: C.gray3 }}>Risk</span><br /><span style={{ fontSize: 16, fontWeight: 600, color: C.green }}>Low</span></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ============================================================
-SECTION: THIS DOES NOT EXIST TODAY
-============================================================ */
-function NewCategorySection() {
-  const [ref, visible] = useInView();
-
-  const features = [
-    "generates logistics scenarios",
-    "sources suppliers automatically",
-    "simulates cost and service",
-    "negotiates prices using AI",
-    "predicts issues before they happen",
+  const capabilities = [
+    { title: "Real-time logistics marketplace", desc: "Live bidding from 500+ qualified suppliers. No RFQs.", icon: "🏪" },
+    { title: "AI sourcing", desc: "Autonomous supplier discovery and evaluation. Ranked by performance.", icon: "🤖" },
+    { title: "Predictive logistics", desc: "Detects disruptions before they happen. Volume spikes, delays.", icon: "📊" },
+    { title: "Digital twin simulation", desc: "Simulate any strategy before execution. Cost, service, risk.", icon: "🔄" },
+    { title: "AI negotiation", desc: "Autonomous price negotiation. Achieves market rates without humans.", icon: "⚡" },
   ];
 
   return (
-    <section ref={ref} className="section section-alt">
-      <div className="container" style={{ textAlign: "center" }}>
-        <div className={`reveal ${visible ? "in" : ""}`}>
-          <div className="eyebrow">A NEW CATEGORY</div>
-        </div>
-        <h2 className={`reveal reveal-delay-1 ${visible ? "in" : ""}`} style={{ maxWidth: 900, margin: "0 auto 32px" }}>
-          LogiStart is not a logistics tool.
-        </h2>
-        <p className={`lead reveal reveal-delay-2 ${visible ? "in" : ""}`} style={{ margin: "0 auto 48px", maxWidth: 640 }}>
-          It is an autonomous decision engine that:
-        </p>
+    <div style={{ background: C.bg, color: C.white, minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
+      <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
+      <Nav onNavigate={setScreen} />
+
+      {/* HERO SECTION */}
+      <section ref={heroRef} style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        padding: "120px 0 80px",
+        position: "relative",
+        overflow: "hidden",
+      }}>
+        <div style={{
+          position: "absolute",
+          top: 0, left: 0, right: 0, bottom: 0,
+          background: "radial-gradient(circle at 20% 30%, rgba(201, 166, 70, 0.05) 0%, transparent 50%)",
+          pointerEvents: "none",
+        }} />
         
-        <div className={`reveal reveal-delay-3 ${visible ? "in" : ""}`} style={{ display: "flex", flexWrap: "wrap", gap: 16, justifyContent: "center" }}>
-          {features.map((feature, i) => (
-            <div key={i} style={{
-              padding: "12px 24px",
-              background: C.bgCard,
-              border: `1px solid ${C.border}`,
-              borderRadius: 100,
-              fontSize: 14,
-              color: C.gray1,
-              transition: "all 0.3s",
-            }}>
-              ✦ {feature}
+        <div className="container" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 60, alignItems: "center" }}>
+          {/* Left Side */}
+          <div>
+            <div className={`reveal ${heroVisible ? "in" : ""}`}>
+              <div className="eyebrow">AUTONOMOUS DECISION ENGINE</div>
             </div>
-          ))}
+            <h1 className={`reveal reveal-delay-1 ${heroVisible ? "in" : ""}`}>
+              AI that designs, sources, and negotiates<br />
+              your logistics strategy
+            </h1>
+            
+            <div className={`reveal reveal-delay-2 ${heroVisible ? "in" : ""}`} style={{ marginBottom: 24 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                <span style={{ fontSize: 18, color: C.gray1 }}>for</span>
+                <span style={{
+                  fontSize: 18,
+                  fontWeight: 600,
+                  color: C.gold,
+                  background: C.goldDim,
+                  padding: "8px 20px",
+                  borderRadius: 100,
+                }}>
+                  {typedText || " "}
+                </span>
+                <span style={{ display: "inline-block", width: 3, height: 28, background: C.gold, animation: "blink 1s infinite" }} />
+              </div>
+            </div>
+            
+            <p className={`lead reveal reveal-delay-3 ${heroVisible ? "in" : ""}`} style={{ marginBottom: 40 }}>
+              LogiStart goes beyond route optimization. It creates scenarios, sources suppliers, 
+              simulates outcomes, and delivers the best logistics decision automatically.
+            </p>
+            
+            <div className={`reveal reveal-delay-4 ${heroVisible ? "in" : ""}`} style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
+              <button className="btn-primary" onClick={() => setScreen("result")}>See a Real Decision →</button>
+              <button className="btn-secondary" onClick={() => setScreen("assessment")}>Run a Strategic Assessment</button>
+            </div>
+
+            <div className={`reveal reveal-delay-4 ${heroVisible ? "in" : ""}`} style={{ marginTop: 48, display: "flex", gap: 48, flexWrap: "wrap" }}>
+              {metrics.map((item) => (
+                <div key={item.label}>
+                  <div className="stat-number" style={{ fontSize: 36 }}>{item.value}</div>
+                  <div style={{ color: C.gray2, fontSize: 13 }}>{item.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right Side - Dashboard Mockup */}
+          <div className={`reveal reveal-delay-3 ${heroVisible ? "in" : ""}`} style={{
+            background: C.bgCard,
+            border: `1px solid ${C.borderLight}`,
+            borderRadius: 32,
+            overflow: "hidden",
+            animation: heroVisible ? "glowPulse 3s ease-in-out infinite" : "none",
+          }}>
+            <div style={{ padding: "20px 24px", borderBottom: `1px solid ${C.border}`, background: C.bgElevated }}>
+              <div style={{ display: "flex", gap: 8 }}>
+                <div style={{ width: 12, height: 12, borderRadius: "50%", background: C.red }} />
+                <div style={{ width: 12, height: 12, borderRadius: "50%", background: C.gold }} />
+                <div style={{ width: 12, height: 12, borderRadius: "50%", background: C.green }} />
+              </div>
+            </div>
+            <div style={{ padding: "28px" }}>
+              <div style={{ marginBottom: 24 }}>
+                <div style={{ fontSize: 12, color: C.gray3, marginBottom: 8 }}>SCENARIO COMPARISON</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+                  {["Scenario A", "Scenario B", "Scenario C"].map((scenario, i) => (
+                    <div key={i} style={{
+                      padding: "12px",
+                      background: C.bgDark,
+                      borderRadius: 12,
+                      border: i === 1 ? `1px solid ${C.gold}` : `1px solid ${C.border}`,
+                    }}>
+                      <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 8 }}>{scenario}</div>
+                      <div style={{ fontSize: 10, color: C.gray2 }}>Cost: ${i === 1 ? "1.24M" : i === 0 ? "1.42M" : "1.38M"}</div>
+                      <div style={{ fontSize: 10, color: C.gray2 }}>Risk: {i === 1 ? "Low" : "Medium"}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div style={{ marginBottom: 24, padding: "16px", background: C.bgDark, borderRadius: 16 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
+                  <span style={{ fontSize: 12, color: C.gray3 }}>COST VS MARKET BENCHMARK</span>
+                  <span style={{ fontSize: 20, fontWeight: 700, color: C.green }}>-18%</span>
+                </div>
+                <div style={{ height: 4, background: C.border, borderRadius: 2 }}>
+                  <div style={{ width: "82%", height: "100%", background: C.green, borderRadius: 2 }} />
+                </div>
+              </div>
+              <div style={{
+                padding: "20px",
+                background: C.goldDim,
+                borderRadius: 16,
+                border: `1px solid ${C.gold}`,
+              }}>
+                <div style={{ fontSize: 10, color: C.gold, marginBottom: 4 }}>RECOMMENDED STRATEGY</div>
+                <div style={{ fontSize: 16, fontWeight: 700, marginBottom: 8 }}>Hybrid Network (2 DCs + Cross-dock)</div>
+                <div style={{ display: "flex", gap: 16 }}>
+                  <div><span style={{ fontSize: 11, color: C.gray3 }}>Confidence</span><br /><span style={{ fontWeight: 600 }}>94/100</span></div>
+                  <div><span style={{ fontSize: 11, color: C.gray3 }}>Risk</span><br /><span style={{ fontWeight: 600, color: C.green }}>Low</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* SECTION: THIS DOES NOT EXIST TODAY */}
+      <section ref={categoryRef} className="section section-alt">
+        <div className="container" style={{ textAlign: "center" }}>
+          <div className={`reveal ${categoryVisible ? "in" : ""}`}>
+            <div className="eyebrow">A NEW CATEGORY</div>
+          </div>
+          <h2 className={`reveal reveal-delay-1 ${categoryVisible ? "in" : ""}`} style={{ maxWidth: 800, margin: "0 auto 24px" }}>
+            LogiStart is not a logistics tool.
+          </h2>
+          <p className={`lead reveal reveal-delay-2 ${categoryVisible ? "in" : ""}`} style={{ margin: "0 auto 48px" }}>
+            It is an autonomous decision engine that:
+          </p>
+          <div className={`reveal reveal-delay-3 ${categoryVisible ? "in" : ""}`} style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center" }}>
+            {[
+              "generates logistics scenarios",
+              "sources suppliers automatically",
+              "simulates cost and service",
+              "negotiates prices using AI",
+              "predicts issues before they happen",
+            ].map((item, i) => (
+              <div key={i} style={{
+                padding: "10px 20px",
+                background: C.bgCard,
+                border: `1px solid ${C.border}`,
+                borderRadius: 100,
+                fontSize: 13,
+                color: C.gray1,
+              }}>
+                ✦ {item}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CAPABILITIES SECTION */}
+      <section ref={capabilitiesRef} className="section">
+        <div className="container">
+          <div style={{ textAlign: "center", marginBottom: 64 }}>
+            <div className={`reveal ${capabilitiesVisible ? "in" : ""}`}>
+              <div className="eyebrow">Capabilities</div>
+            </div>
+            <h2 className={`reveal reveal-delay-1 ${capabilitiesVisible ? "in" : ""}`}>
+              Everything you need. Nothing you don't.
+            </h2>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
+            {capabilities.map((cap, i) => (
+              <div key={i} className={`card-premium reveal reveal-delay-${(i % 3) + 1} ${capabilitiesVisible ? "in" : ""}`} style={{ padding: "32px" }}>
+                <div style={{ fontSize: 40, marginBottom: 20 }}>{cap.icon}</div>
+                <h3>{cap.title}</h3>
+                <p style={{ fontSize: 14, color: C.gray2, lineHeight: 1.6 }}>{cap.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* POSITIONING SECTION */}
+      <section ref={positioningRef} className="section section-alt">
+        <div className="container" style={{ textAlign: "center" }}>
+          <div className={`reveal ${positioningVisible ? "in" : ""}`}>
+            <div className="eyebrow">Category Definition</div>
+          </div>
+          <h2 className={`reveal reveal-delay-1 ${positioningVisible ? "in" : ""}`}>
+            Not a TMS.<br />
+            Not an ERP.<br />
+            Not a dashboard.
+          </h2>
+          <div className={`reveal reveal-delay-2 ${positioningVisible ? "in" : ""}`} style={{ marginTop: 32 }}>
+            <div style={{
+              display: "inline-block",
+              padding: "16px 40px",
+              background: C.goldDim,
+              border: `1px solid ${C.gold}`,
+              borderRadius: 100,
+              fontSize: 18,
+              fontWeight: 600,
+              color: C.gold,
+            }}>
+              → Autonomous Logistics Decision Engine
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="section" style={{ borderBottom: "none" }}>
+        <div className="container" style={{ textAlign: "center" }}>
+          <div className="eyebrow">The Future of Logistics Decisions</div>
+          <h2 style={{ maxWidth: 800, margin: "0 auto 24px" }}>
+            Stop choosing between existing options.<br />
+            <span className="gradient-text">Start designing the best one.</span>
+          </h2>
+          <p className="lead" style={{ margin: "0 auto 40px" }}>
+            See how LogiStart delivers your first decision in under 48 hours.
+          </p>
+          <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
+            <button className="btn-primary" onClick={() => setScreen("assessment")}>Request Demo →</button>
+            <button className="btn-secondary">Contact Sales</button>
+          </div>
+          <div style={{ marginTop: 48, display: "flex", gap: 32, justifyContent: "center", flexWrap: "wrap", fontSize: 13, color: C.gray3 }}>
+            <span>✓ No long-term contract</span>
+            <span>✓ Setup in 1 day</span>
+            <span>✓ Value in first decision</span>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer style={{ padding: "48px", borderTop: `1px solid ${C.border}`, background: C.bgDark }}>
+        <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 24 }}>
+          <Logo />
+          <div style={{ display: "flex", gap: 40, fontSize: 13, color: C.gray2 }}>
+            <span>Platform</span>
+            <span>Capabilities</span>
+            <span>Security</span>
+            <span>Contact</span>
+          </div>
+          <div style={{ fontSize: 12, color: C.gray3 }}>© 2026 LogiStart. All rights reserved.</div>
+        </div>
+      </footer>
+    </div>
   );
 }
 
 /* ============================================================
-CAPABILITIES
+ASSESSMENT SCREEN (Premium)
 ============================================================ */
-const CAPABILITIES = [
-  {
-    title: "Real-time logistics marketplace",
-    description: "Live bidding from 500+ qualified suppliers. No RFQs. Instant quotes.",
-    icon: "🏪",
-    color: C.gold,
-  },
-  {
-    title: "AI sourcing",
-    description: "Autonomous supplier discovery and evaluation. Ranked by performance and fit.",
-    icon: "🤖",
-    color: C.blue,
-  },
-  {
-    title: "Predictive logistics",
-    description: "Detects disruptions before they happen. Volume spikes, capacity crunches, delays.",
-    icon: "📊",
-    color: C.purple,
-  },
-  {
-    title: "Digital twin simulation",
-    description: "Simulate any strategy before execution. See impact on cost, service, and risk.",
-    icon: "🔄",
-    color: C.green,
-  },
-  {
-    title: "AI negotiation",
-    description: "Autonomous price negotiation with suppliers. Achieves market rates without human involvement.",
-    icon: "⚡",
-    color: C.gold,
-  },
-];
-
-function CapabilitiesSection() {
+function AssessmentScreen({ form, updateField, setScreen }) {
   const [ref, visible] = useInView();
 
   return (
-    <section ref={ref} className="section">
-      <div className="container">
-        <SectionHeader
-          eyebrow="Capabilities"
-          title="Everything you need. Nothing you don't."
-          visible={visible}
-        />
+    <div style={{ background: C.bg, color: C.white, minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
+      <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
+      <Nav onNavigate={setScreen} />
+      
+      <section style={{ padding: "120px 0 80px" }}>
+        <div className="container">
+          <div style={{ marginBottom: 20 }}>
+            <button className="btn-secondary" style={{ padding: "10px 24px" }} onClick={() => setScreen("home")}>
+              ← Back to Home
+            </button>
+          </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 24 }}>
-          {CAPABILITIES.map((cap, i) => (
-            <div
-              key={i}
-              className={`reveal reveal-delay-${(i % 3) + 1} ${visible ? "in" : ""}`}
-              style={{
-                background: C.bgCard,
-                border: `1px solid ${C.border}`,
-                borderRadius: 24,
-                padding: "36px",
-                transition: "all 0.3s",
-              }}
-              onMouseEnter={e => {
-                e.currentTarget.style.borderColor = C.gold;
-                e.currentTarget.style.transform = "translateY(-4px)";
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.borderColor = C.border;
-                e.currentTarget.style.transform = "translateY(0)";
-              }}
-            >
-              <div style={{ fontSize: 44, marginBottom: 20 }}>{cap.icon}</div>
-              <h3 style={{ fontSize: 20, marginBottom: 12 }}>{cap.title}</h3>
-              <p style={{ fontSize: 14, color: C.gray2, lineHeight: 1.6 }}>{cap.description}</p>
+          <div style={{ maxWidth: 900, marginBottom: 48 }}>
+            <div className="eyebrow">Strategic Assessment</div>
+            <h1 style={{ fontSize: "clamp(42px, 6vw, 68px)", lineHeight: 1, margin: 0 }}>
+              Describe your logistics challenge
+            </h1>
+            <p className="lead" style={{ marginTop: 24 }}>
+              Enter the operational context and let LogiStart generate scenarios,
+              benchmark the market, and recommend the best decision.
+            </p>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 32, alignItems: "start" }}>
+            {/* Form Card */}
+            <div className="card-premium" style={{ padding: "32px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+                <div>
+                  <label className="label-premium">Project Type</label>
+                  <select className="select-premium" value={form.projectType} onChange={(e) => updateField("projectType", e.target.value)}>
+                    <option value="existing_operation">Existing operation</option>
+                    <option value="new_project">New project</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="label-premium">Mode</label>
+                  <select className="select-premium" value={form.mode} onChange={(e) => updateField("mode", e.target.value)}>
+                    <option value="road">Road</option>
+                    <option value="ocean">Ocean</option>
+                    <option value="air">Air</option>
+                    <option value="warehousing">Warehousing</option>
+                    <option value="hybrid">Hybrid</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="label-premium">Origin</label>
+                  <input className="input-premium" value={form.origin} onChange={(e) => updateField("origin", e.target.value)} placeholder="e.g. Sao Paulo" />
+                </div>
+                <div>
+                  <label className="label-premium">Destination</label>
+                  <input className="input-premium" value={form.destination} onChange={(e) => updateField("destination", e.target.value)} placeholder="e.g. Recife" />
+                </div>
+                <div>
+                  <label className="label-premium">Volume</label>
+                  <input className="input-premium" value={form.volume} onChange={(e) => updateField("volume", e.target.value)} placeholder="e.g. 3000 pallets" />
+                </div>
+                <div>
+                  <label className="label-premium">Duration</label>
+                  <input className="input-premium" value={form.duration} onChange={(e) => updateField("duration", e.target.value)} placeholder="e.g. 6 months" />
+                </div>
+                <div>
+                  <label className="label-premium">Priority</label>
+                  <select className="select-premium" value={form.priority} onChange={(e) => updateField("priority", e.target.value)}>
+                    <option value="cost">Cost</option>
+                    <option value="speed">Speed</option>
+                    <option value="resilience">Resilience</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="label-premium">Service Level</label>
+                  <select className="select-premium" value={form.serviceLevel} onChange={(e) => updateField("serviceLevel", e.target.value)}>
+                    <option value="standard">Standard</option>
+                    <option value="high">High</option>
+                    <option value="critical">Critical</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ marginTop: 20 }}>
+                <label className="label-premium">Additional Notes</label>
+                <textarea className="input-premium" style={{ minHeight: "100px", resize: "vertical" }} value={form.notes} onChange={(e) => updateField("notes", e.target.value)} placeholder="Describe the challenge, constraints, or goals" />
+              </div>
+
+              <div style={{ marginTop: 28, display: "flex", gap: 12, flexWrap: "wrap" }}>
+                <button className="btn-primary" onClick={() => setScreen("result")}>Generate Decision →</button>
+                <button className="btn-secondary" onClick={() => {
+                  updateField("projectType", "new_project");
+                  updateField("origin", "");
+                  updateField("destination", "");
+                  updateField("volume", "");
+                  updateField("duration", "");
+                  updateField("mode", "hybrid");
+                  updateField("priority", "cost");
+                  updateField("serviceLevel", "standard");
+                  updateField("notes", "");
+                }}>Reset</button>
+              </div>
             </div>
-          ))}
+
+            {/* Info Card */}
+            <div className="card-premium" style={{ padding: "32px" }}>
+              <div className="eyebrow" style={{ paddingLeft: 0, marginBottom: 16 }}>What this MVP does</div>
+              <h3 style={{ fontSize: 24, marginBottom: 16 }}>Decision preview</h3>
+              <p style={{ color: C.gray2, marginBottom: 24, lineHeight: 1.6 }}>
+                This version simulates a strategic recommendation based on your inputs and shows:
+              </p>
+              <div style={{ display: "grid", gap: 12 }}>
+                {["Recommended strategy", "Scenario comparison", "Estimated cost outlook", "Market benchmark", "Risk level", "Confidence score"].map((item) => (
+                  <div key={item} style={{
+                    padding: "12px 16px",
+                    borderRadius: 12,
+                    background: C.bgDark,
+                    border: `1px solid ${C.border}`,
+                    color: C.gray1,
+                    fontSize: 13,
+                  }}>
+                    {item}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 }
 
 /* ============================================================
-DECISION OUTPUT
+RESULT SCREEN (Premium)
 ============================================================ */
-function DecisionOutputSection() {
+function ResultScreen({ decision, form, setScreen }) {
   const [ref, visible] = useInView();
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     if (!visible) return;
+    const conf = parseInt(decision.confidence);
     let p = 0;
     const interval = setInterval(() => {
-      p = Math.min(p + 2, 94);
+      p = Math.min(p + 2, conf);
       setProgress(p);
-      if (p >= 94) clearInterval(interval);
+      if (p >= conf) clearInterval(interval);
     }, 20);
     return () => clearInterval(interval);
-  }, [visible]);
+  }, [visible, decision.confidence]);
 
-  return (
-    <section ref={ref} className="section section-alt">
-      <div className="container">
-        <SectionHeader
-          eyebrow="Decision Output"
-          title="One decision. Fully justified."
-          subtitle="This is not a dashboard. This is the decision your team was trying to reach for weeks."
-          visible={visible}
-        />
+  function labelProjectType(value) {
+    return value === "existing_operation" ? "Existing operation" : "New project";
+  }
 
-        <div className={`reveal reveal-delay-3 ${visible ? "in" : ""}`} style={{
-          background: C.bgCard,
-          border: `1px solid ${C.borderLight}`,
-          borderRadius: 32,
-          overflow: "hidden",
-          animation: visible ? "borderGlow 3s ease-in-out infinite" : "none",
-        }}>
-          <div style={{ padding: "48px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 48 }}>
-              {/* Left */}
-              <div>
-                <div className="eyebrow" style={{ marginBottom: 16, paddingLeft: 0 }}>RECOMMENDED STRATEGY</div>
-                <h3 style={{ fontSize: 32, fontWeight: 700, marginBottom: 8, letterSpacing: -1 }}>Hybrid Network</h3>
-                <p style={{ color: C.gray2, marginBottom: 32 }}>2 DCs + Cross-dock | FTL + LTL | Southeast Region</p>
+  function capitalize(value) {
+    if (!value) return "-";
+    return value.charAt(0).toUpperCase() + value.slice(1);
+  }
 
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, marginBottom: 32 }}>
-                  <div>
-                    <div style={{ fontSize: 12, color: C.gray3, marginBottom: 4 }}>Total Cost</div>
-                    <div className="stat-number" style={{ fontSize: 40 }}>$1.24M</div>
-                    <div style={{ fontSize: 12, color: C.green }}>↓ 18% below market</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 12, color: C.gray3, marginBottom: 4 }}>Selected Supplier</div>
-                    <div style={{ fontSize: 20, fontWeight: 600 }}>TransLog Brasil</div>
-                    <div style={{ fontSize: 12, color: C.gray2 }}>97.2% on-time rate</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 12, color: C.gray3, marginBottom: 4 }}>Risk Level</div>
-                    <div style={{ fontSize: 20, fontWeight: 600, color: C.green }}>Low</div>
-                    <div style={{ fontSize: 12, color: C.gray2 }}>Operational profile</div>
-                  </div>
-                  <div>
-                    <div style={{ fontSize: 12, color: C.gray3, marginBottom: 4 }}>Decision Time</div>
-                    <div style={{ fontSize: 20, fontWeight: 600 }}>42 seconds</div>
-                    <div style={{ fontSize: 12, color: C.gray2 }}>vs 3-6 weeks manual</div>
-                  </div>
-                </div>
-
-                <div>
-                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 12 }}>
-                    <span style={{ fontSize: 12, color: C.gray3 }}>Confidence Score</span>
-                    <span style={{ fontSize: 20, fontWeight: 700 }}>{progress}/100</span>
-                  </div>
-                  <div style={{ height: 3, background: C.border, borderRadius: 2, overflow: "hidden" }}>
-                    <div style={{ width: `${progress}%`, height: "100%", background: C.gold, borderRadius: 2 }} />
-                  </div>
-                </div>
-              </div>
-
-              {/* Right */}
-              <div>
-                <div className="eyebrow" style={{ marginBottom: 16, paddingLeft: 0 }}>WHY THIS DECISION</div>
-                <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                  {[
-                    "Best cost-to-service ratio across 4 simulated scenarios",
-                    "18% below market benchmark - validated by 3 data sources",
-                    "Lowest operational risk among all evaluated options",
-                    "Supplier with highest composite score (cost + reliability)",
-                    "Volume sensitivity controlled within ±15% range",
-                  ].map((reason, i) => (
-                    <div key={i} style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
-                      <span style={{ color: C.gold, fontSize: 14 }}>✓</span>
-                      <span style={{ fontSize: 14, color: C.gray1, lineHeight: 1.5 }}>{reason}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <div style={{ marginTop: 32, padding: "20px", background: C.goldDim, borderRadius: 16, textAlign: "center" }}>
-                  <div style={{ fontSize: 13, color: C.gold, marginBottom: 8 }}>⚡ DECISION READY</div>
-                  <div style={{ fontSize: 12, color: C.gray2 }}>This is not a dashboard. This is the decision your team was trying to reach for weeks.</div>
-                </div>
-              </div>
-            </div>
-
-            <div style={{ marginTop: 48, paddingTop: 32, borderTop: `1px solid ${C.border}`, display: "flex", gap: 16, justifyContent: "flex-end" }}>
-              <Button variant="secondary" style={{ padding: "12px 28px" }}>Export PDF</Button>
-              <Button variant="primary" style={{ padding: "12px 28px" }}>Approve Decision →</Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ============================================================
-HOW IT WORKS
-============================================================ */
-const STEPS = [
-  { number: "01", title: "Describe", desc: "Define origin, destination, volume, and priority. Takes 3 minutes." },
-  { number: "02", title: "Generate Scenarios", desc: "LogiStart creates multiple network designs and evaluates each." },
-  { number: "03", title: "Source Suppliers", desc: "Automatic supplier discovery and qualification. No RFQs." },
-  { number: "04", title: "Simulate Outcomes", desc: "Cost, service, and risk modeled before execution." },
-  { number: "05", title: "AI Negotiation", desc: "Autonomous price negotiation for best market rates." },
-  { number: "06", title: "Decision Delivered", desc: "Executive-ready recommendation. Ready to present." },
-];
-
-function HowItWorksSection() {
-  const [ref, visible] = useInView();
-
-  return (
-    <section ref={ref} className="section">
-      <div className="container">
-        <SectionHeader
-          eyebrow="How It Works"
-          title="From problem to decision. In minutes."
-          visible={visible}
-        />
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 32 }}>
-          {STEPS.map((step, i) => (
-            <div
-              key={i}
-              className={`reveal reveal-delay-${(i % 3) + 1} ${visible ? "in" : ""}`}
-              style={{
-                background: C.bgCard,
-                border: `1px solid ${C.border}`,
-                borderRadius: 20,
-                padding: "28px",
-                transition: "all 0.3s",
-              }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = C.gold}
-              onMouseLeave={e => e.currentTarget.style.borderColor = C.border}
-            >
-              <div style={{
-                width: 48,
-                height: 48,
-                borderRadius: "50%",
-                background: C.goldDim,
-                border: `1px solid ${C.gold}`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: 18,
-                fontWeight: 600,
-                color: C.gold,
-                marginBottom: 20,
-              }}>
-                {step.number}
-              </div>
-              <h3 style={{ fontSize: 18, marginBottom: 8 }}>{step.title}</h3>
-              <p style={{ fontSize: 13, color: C.gray2, lineHeight: 1.5 }}>{step.desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ============================================================
-IMPACT
-============================================================ */
-function ImpactSection() {
-  const [ref, visible] = useInView();
-
-  return (
-    <section ref={ref} className="section section-alt">
-      <div className="container">
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 80, alignItems: "center" }}>
-          <div>
-            <div className={`reveal ${visible ? "in" : ""}`}>
-              <div className="eyebrow">Measurable Impact</div>
-            </div>
-            <h2 className={`reveal reveal-delay-1 ${visible ? "in" : ""}`}>
-              Built for<br />
-              <span className="gradient-text">executive outcomes.</span>
-            </h2>
-            <p className={`lead reveal reveal-delay-2 ${visible ? "in" : ""}`}>
-              Every recommendation is backed by real market data. This is what category-defining technology delivers.
-            </p>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
-            <div className={`reveal reveal-delay-1 ${visible ? "in" : ""}`} style={{ background: C.bgCard, border: `1px solid ${C.border}`, borderRadius: 24, padding: "32px", textAlign: "center" }}>
-              <div className="stat-number" style={{ fontSize: 56 }}>10x</div>
-              <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>Faster decisions</div>
-              <div style={{ fontSize: 13, color: C.gray2 }}>From weeks to minutes</div>
-            </div>
-            <div className={`reveal reveal-delay-2 ${visible ? "in" : ""}`} style={{ background: C.bgCard, border: `1px solid ${C.border}`, borderRadius: 24, padding: "32px", textAlign: "center" }}>
-              <div className="stat-number" style={{ fontSize: 56 }}>8-20%</div>
-              <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>Cost reduction</div>
-              <div style={{ fontSize: 13, color: C.gray2 }}>vs traditional procurement</div>
-            </div>
-            <div className={`reveal reveal-delay-3 ${visible ? "in" : ""}`} style={{ background: C.bgCard, border: `1px solid ${C.border}`, borderRadius: 24, padding: "32px", textAlign: "center" }}>
-              <div className="stat-number" style={{ fontSize: 56 }}>91%</div>
-              <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>Confidence score</div>
-              <div style={{ fontSize: 13, color: C.gray2 }}>Validated by market data</div>
-            </div>
-            <div className={`reveal reveal-delay-4 ${visible ? "in" : ""}`} style={{ background: C.bgCard, border: `1px solid ${C.border}`, borderRadius: 24, padding: "32px", textAlign: "center" }}>
-              <div className="stat-number" style={{ fontSize: 56 }}>0</div>
-              <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>Spreadsheet errors</div>
-              <div style={{ fontSize: 13, color: C.gray2 }}>Automated, validated data</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ============================================================
-POSITIONING
-============================================================ */
-function PositioningSection() {
-  const [ref, visible] = useInView();
-
-  return (
-    <section ref={ref} className="section">
-      <div className="container" style={{ textAlign: "center" }}>
-        <div className={`reveal ${visible ? "in" : ""}`}>
-          <div className="eyebrow">Category Definition</div>
-        </div>
-        <h2 className={`reveal reveal-delay-1 ${visible ? "in" : ""}`} style={{ maxWidth: 900, margin: "0 auto 32px" }}>
-          Not a TMS.<br />
-          Not an ERP.<br />
-          Not a dashboard.
-        </h2>
-        <div className={`reveal reveal-delay-2 ${visible ? "in" : ""}`}>
-          <div style={{
-            display: "inline-block",
-            padding: "16px 40px",
-            background: C.goldDim,
-            border: `1px solid ${C.gold}`,
-            borderRadius: 100,
-            fontSize: 20,
-            fontWeight: 600,
-            color: C.gold,
-          }}>
-            → Autonomous Logistics Decision Engine
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ============================================================
-FINAL CTA
-============================================================ */
-function FinalCTASection() {
-  const [ref, visible] = useInView();
-
-  return (
-    <section ref={ref} className="section section-alt" style={{ borderBottom: "none" }}>
-      <div className="container" style={{ textAlign: "center" }}>
-        <div className={`reveal ${visible ? "in" : ""}`}>
-          <div className="eyebrow">The Future of Logistics Decisions</div>
-        </div>
-        <h2 className={`reveal reveal-delay-1 ${visible ? "in" : ""}`} style={{ maxWidth: 800, margin: "0 auto 24px" }}>
-          Stop choosing between existing options.<br />
-          <span className="gradient-text">Start designing the best one.</span>
-        </h2>
-        <p className={`lead reveal reveal-delay-2 ${visible ? "in" : ""}`} style={{ margin: "0 auto 40px", maxWidth: 480 }}>
-          See how LogiStart delivers your first decision in under 48 hours.
-        </p>
-        <div className={`reveal reveal-delay-3 ${visible ? "in" : ""}`} style={{ display: "flex", gap: 16, justifyContent: "center" }}>
-          <Button variant="primary">Request Demo →</Button>
-          <Button variant="secondary">Contact Sales</Button>
-        </div>
-        <div className={`reveal reveal-delay-4 ${visible ? "in" : ""}`} style={{ marginTop: 64, display: "flex", gap: 32, justifyContent: "center", flexWrap: "wrap", fontSize: 13, color: C.gray3 }}>
-          <span>✓ No long-term contract</span>
-          <span>✓ Setup in 1 day</span>
-          <span>✓ Value in first decision</span>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ============================================================
-SECTION HEADER HELPER
-============================================================ */
-function SectionHeader({ eyebrow, title, subtitle, visible, center = true }) {
-  return (
-    <div style={{ textAlign: center ? "center" : "left", marginBottom: center ? 80 : 48 }}>
-      <div className={`reveal ${visible ? "in" : ""}`}>
-        <div className="eyebrow">{eyebrow}</div>
-      </div>
-      <h2 className={`reveal reveal-delay-1 ${visible ? "in" : ""}`}>
-        {title}
-      </h2>
-      {subtitle && (
-        <p className={`lead reveal reveal-delay-2 ${visible ? "in" : ""}`} style={{ margin: center ? "0 auto" : 0, maxWidth: center ? 640 : "none" }}>
-          {subtitle}
-        </p>
-      )}
-    </div>
-  );
-}
-
-/* ============================================================
-FOOTER
-============================================================ */
-function Footer() {
-  return (
-    <footer style={{ padding: "64px 48px 48px", borderTop: `1px solid ${C.border}`, background: C.bgDark }}>
-      <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 32 }}>
-        <Logo />
-        <div style={{ display: "flex", gap: 48, fontSize: 13, color: C.gray2 }}>
-          <span style={{ cursor: "pointer" }}>Platform</span>
-          <span style={{ cursor: "pointer" }}>Capabilities</span>
-          <span style={{ cursor: "pointer" }}>Security</span>
-          <span style={{ cursor: "pointer" }}>Contact</span>
-        </div>
-        <div style={{ fontSize: 12, color: C.gray3 }}>
-          © 2026 LogiStart. All rights reserved.
-        </div>
-      </div>
-    </footer>
-  );
-}
-
-/* ============================================================
-ROOT
-============================================================ */
-export default function App() {
   return (
     <div style={{ background: C.bg, color: C.white, minHeight: "100vh", fontFamily: "'Inter', sans-serif" }}>
       <style dangerouslySetInnerHTML={{ __html: GLOBAL_CSS }} />
-      <Nav />
-      <main>
-        <HeroSection />
-        <NewCategorySection />
-        <DecisionOutputSection />
-        <CapabilitiesSection />
-        <HowItWorksSection />
-        <ImpactSection />
-        <PositioningSection />
-        <FinalCTASection />
-      </main>
-      <Footer />
+      <Nav onNavigate={setScreen} />
+      
+      <section ref={ref} style={{ padding: "120px 0 80px" }}>
+        <div className="container">
+          <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+            <button className="btn-secondary" style={{ padding: "10px 24px" }} onClick={() => setScreen("home")}>
+              ← Back to Home
+            </button>
+            <button className="btn-secondary" style={{ padding: "10px 24px" }} onClick={() => setScreen("assessment")}>
+              Edit Assessment
+            </button>
+          </div>
+
+          <div style={{ maxWidth: 920, marginBottom: 48 }}>
+            <div className="eyebrow">Decision Output</div>
+            <h1 style={{ fontSize: "clamp(42px, 6vw, 68px)", lineHeight: 1, margin: 0 }}>
+              Strategic recommendation generated
+            </h1>
+            <p className="lead" style={{ marginTop: 24 }}>
+              This is not a dashboard. This is the decision your team was trying to reach for weeks.
+            </p>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1.1fr 0.9fr", gap: 32, alignItems: "start" }}>
+            {/* Decision Card */}
+            <div className="card-premium" style={{ padding: "32px", animation: visible ? "glowPulse 3s ease-in-out infinite" : "none" }}>
+              <div style={{ borderBottom: `1px solid ${C.border}`, paddingBottom: 24, marginBottom: 24 }}>
+                <div className="eyebrow" style={{ paddingLeft: 0, marginBottom: 12 }}>RECOMMENDED STRATEGY</div>
+                <h2 style={{ fontSize: 28, color: C.gold, marginBottom: 12 }}>{decision.strategy}</h2>
+                <p style={{ color: C.gray2, lineHeight: 1.6 }}>{decision.summary}</p>
+              </div>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 16, marginBottom: 28 }}>
+                <div className="card-premium" style={{ padding: "16px", background: C.bgDark }}>
+                  <div style={{ fontSize: 11, color: C.gray3, marginBottom: 8 }}>Estimated Annual Cost</div>
+                  <div style={{ fontSize: 28, fontWeight: 700 }}>{decision.cost}</div>
+                </div>
+                <div className="card-premium" style={{ padding: "16px", background: C.bgDark }}>
+                  <div style={{ fontSize: 11, color: C.gray3, marginBottom: 8 }}>vs Market Benchmark</div>
+                  <div style={{ fontSize: 28, fontWeight: 700, color: C.green }}>{decision.benchmark}</div>
+                </div>
+                <div className="card-premium" style={{ padding: "16px", background: C.bgDark }}>
+                  <div style={{ fontSize: 11, color: C.gray3, marginBottom: 8 }}>Risk Level</div>
+                  <div style={{ fontSize: 28, fontWeight: 700, color: decision.risk === "Low" ? C.green : C.gold }}>{decision.risk}</div>
+                </div>
+                <div className="card-premium" style={{ padding: "16px", background: C.bgDark }}>
+                  <div style={{ fontSize: 11, color: C.gray3, marginBottom: 8 }}>Confidence Score</div>
+                  <div style={{ fontSize: 28, fontWeight: 700 }}>{progress}/100</div>
+                </div>
+              </div>
+
+              <div>
+                <div className="eyebrow" style={{ paddingLeft: 0, marginBottom: 16 }}>Scenario Comparison</div>
+                <div style={{ display: "grid", gap: 12 }}>
+                  {decision.scenarios.map((scenario) => (
+                    <div key={scenario.name} style={{
+                      padding: "18px",
+                      borderRadius: 16,
+                      border: scenario.recommended ? `1px solid ${C.gold}` : `1px solid ${C.border}`,
+                      background: scenario.recommended ? C.goldDim : C.bgDark,
+                    }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                        <strong style={{ fontSize: 16 }}>{scenario.name}</strong>
+                        {scenario.recommended && <span style={{ color: C.gold, fontSize: 12, fontWeight: 600 }}>✓ Recommended</span>}
+                      </div>
+                      <div style={{ fontSize: 13, color: C.gray2 }}>{scenario.text}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ marginTop: 28, paddingTop: 24, borderTop: `1px solid ${C.border}`, display: "flex", gap: 12 }}>
+                <button className="btn-primary" style={{ flex: 1 }}>Export Decision PDF</button>
+                <button className="btn-secondary" style={{ flex: 1 }}>Book Executive Demo</button>
+              </div>
+            </div>
+
+            {/* Summary Card */}
+            <div className="card-premium" style={{ padding: "32px" }}>
+              <div className="eyebrow" style={{ paddingLeft: 0, marginBottom: 16 }}>Input Summary</div>
+              <div style={{ display: "grid", gap: 12, marginBottom: 28 }}>
+                <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: 8, borderBottom: `1px solid ${C.border}` }}>
+                  <span style={{ color: C.gray2 }}>Project Type</span>
+                  <strong>{labelProjectType(form.projectType)}</strong>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: 8, borderBottom: `1px solid ${C.border}` }}>
+                  <span style={{ color: C.gray2 }}>Origin</span>
+                  <strong>{form.origin || "-"}</strong>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: 8, borderBottom: `1px solid ${C.border}` }}>
+                  <span style={{ color: C.gray2 }}>Destination</span>
+                  <strong>{form.destination || "-"}</strong>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: 8, borderBottom: `1px solid ${C.border}` }}>
+                  <span style={{ color: C.gray2 }}>Volume</span>
+                  <strong>{form.volume || "-"}</strong>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: 8, borderBottom: `1px solid ${C.border}` }}>
+                  <span style={{ color: C.gray2 }}>Duration</span>
+                  <strong>{form.duration || "-"}</strong>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: 8, borderBottom: `1px solid ${C.border}` }}>
+                  <span style={{ color: C.gray2 }}>Mode</span>
+                  <strong>{capitalize(form.mode)}</strong>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", paddingBottom: 8, borderBottom: `1px solid ${C.border}` }}>
+                  <span style={{ color: C.gray2 }}>Priority</span>
+                  <strong>{capitalize(form.priority)}</strong>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ color: C.gray2 }}>Service Level</span>
+                  <strong>{capitalize(form.serviceLevel)}</strong>
+                </div>
+              </div>
+
+              <div className="eyebrow" style={{ paddingLeft: 0, marginBottom: 12 }}>Next Step</div>
+              <p style={{ color: C.gray1, lineHeight: 1.6, marginBottom: 24 }}>{decision.nextStep}</p>
+
+              <div style={{
+                padding: "20px",
+                background: C.goldDim,
+                borderRadius: 16,
+                border: `1px solid ${C.gold}`,
+                textAlign: "center",
+              }}>
+                <div style={{ fontSize: 12, color: C.gold, marginBottom: 8 }}>⚡ READY FOR EXECUTION</div>
+                <div style={{ fontSize: 13, color: C.gray2 }}>This decision is ready to present to your board.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
+}
+
+/* ============================================================
+DECISION LOGIC (mantida do seu código)
+============================================================ */
+function generateDecision(form) {
+  const isNewProject = form.projectType === "new_project";
+  const isHybrid = form.mode === "hybrid";
+  const isWarehousing = form.mode === "warehousing";
+  const isSpeed = form.priority === "speed";
+  const isResilience = form.priority === "resilience";
+  const isCritical = form.serviceLevel === "critical";
+  const volumeText = (form.volume || "").toLowerCase();
+
+  const largeVolume =
+    volumeText.includes("3000") ||
+    volumeText.includes("3.000") ||
+    volumeText.includes("high") ||
+    volumeText.includes("large") ||
+    volumeText.includes("pallet");
+
+  let strategy = "Hybrid network with 2 DCs + cross-dock";
+  let summary = "Recommended for balancing cost, service level, and expansion flexibility across the network.";
+  let cost = "$1.2M";
+  let benchmark = "-18% vs market";
+  let risk = "Low";
+  let confidence = "91/100";
+  let nextStep = "Launch supplier outreach for the recommended model and validate service assumptions with shortlisted operators.";
+
+  if (isWarehousing) {
+    strategy = "3PL warehousing model with flexible overflow capacity";
+    summary = "Recommended to secure storage capacity quickly while preserving flexibility and reducing fixed exposure.";
+    cost = "$890k";
+    benchmark = "-12% vs market";
+    risk = "Medium-Low";
+    confidence = "88/100";
+    nextStep = "Validate capacity availability, service SLAs, and implementation timeline with top-ranked 3PL operators.";
+  }
+
+  if (isNewProject && isHybrid) {
+    strategy = "Hybrid launch network with regional DC + cross-dock support";
+    summary = "Recommended for new project ramp-up where flexibility, supplier optionality, and phased scale matter most.";
+    cost = "$1.35M";
+    benchmark = "-15% vs market";
+    risk = "Low";
+    confidence = "92/100";
+    nextStep = "Run a pilot sourcing round for the hybrid design and validate launch timing, ramp curve, and regional service targets.";
+  }
+
+  if (isSpeed || isCritical) {
+    strategy = "Multi-node fast-response network";
+    summary = "Recommended for higher service urgency, prioritizing lead time reduction and continuity over lowest cost.";
+    cost = "$1.48M";
+    benchmark = "-6% vs market";
+    risk = "Medium";
+    confidence = "86/100";
+    nextStep = "Confirm lead-time assumptions, premium service requirements, and backup capacity across shortlisted partners.";
+  }
+
+  if (isResilience) {
+    strategy = "Dual-sourcing network with regional redundancy";
+    summary = "Recommended to reduce dependency risk and improve continuity through diversified provider and node design.";
+    cost = "$1.41M";
+    benchmark = "-9% vs market";
+    risk = "Low";
+    confidence = "89/100";
+    nextStep = "Validate dual-sourcing economics and negotiate redundancy clauses with primary and secondary operators.";
+  }
+
+  if (largeVolume && isNewProject) {
+    strategy = "Scaled hybrid network with 2 DCs, overflow warehousing, and cross-dock";
+    summary = "Recommended for large-scale project launch requiring capacity flexibility, network balance, and faster implementation.";
+    cost = "$1.62M";
+    benchmark = "-18% vs market";
+    risk = "Low";
+    confidence = "93/100";
+    nextStep = "Initiate strategic bid across warehousing and transport providers and validate phased capacity expansion.";
+  }
+
+  const scenarios = [
+    {
+      name: "Scenario A - Single DC model",
+      text: "Lowest structural complexity, but weaker regional service responsiveness and higher concentration risk.",
+      recommended: false,
+    },
+    {
+      name: "Scenario B - Hybrid network",
+      text: "Best balance of cost, service, implementation speed, and provider optionality across the network.",
+      recommended: true,
+    },
+    {
+      name: "Scenario C - Fully distributed model",
+      text: "Higher service potential but increased fixed cost and coordination complexity across nodes.",
+      recommended: false,
+    },
+  ];
+
+  if (strategy.toLowerCase().includes("dual-sourcing")) {
+    scenarios[1].recommended = false;
+    scenarios[2].recommended = true;
+    scenarios[2].name = "Scenario C - Dual-sourcing resilient network";
+    scenarios[2].text = "Best fit for resilience priority with diversified providers and stronger business continuity.";
+  }
+
+  if (isWarehousing) {
+    scenarios[0].name = "Scenario A - Single 3PL warehouse";
+    scenarios[1].name = "Scenario B - Flexible core + overflow";
+    scenarios[2].name = "Scenario C - Multi-warehouse model";
+    scenarios[1].text = "Best balance of storage flexibility, cost control, and scalability during demand variation.";
+  }
+
+  return { strategy, summary, cost, benchmark, risk, confidence, nextStep, scenarios };
 }

@@ -3,14 +3,10 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "LogiStart LDI - Logistics Decision Intelligence Platform",
-  "author": "LogiStart",
-  "license": "MIT",
   "scripts": {
-    "dev": "vite --host",
+    "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview",
-    "preview:prod": "vite preview --host"
+    "preview": "vite preview"
   },
   "dependencies": {
     "react": "^18.3.1",
@@ -19,17 +15,5 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
     "vite": "^5.4.10"
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   }
 }

@@ -280,6 +280,88 @@ h3 {
   margin-bottom: 8px;
   letter-spacing: 0.5px;
 }
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.8);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: ${C.bgCard};
+  border: 1px solid ${C.borderLight};
+  border-radius: 32px;
+  max-width: 900px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+  animation: fadeUp 0.4s ease;
+}
+
+.modal-close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  background: none;
+  border: none;
+  color: ${C.gray2};
+  font-size: 28px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.modal-close:hover {
+  color: ${C.white};
+}
+
+/* Loading steps */
+.loading-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 32px 0;
+}
+.loading-step {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  color: ${C.gray2};
+  transition: color 0.3s;
+}
+.loading-step.active {
+  color: ${C.gold};
+}
+.loading-step.completed {
+  color: ${C.green};
+}
+.loading-step .step-icon {
+  width: 20px;
+  text-align: center;
+}
+.progress-bar {
+  height: 4px;
+  background: ${C.border};
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 24px 0;
+}
+.progress-fill {
+  height: 100%;
+  background: ${C.gold};
+  transition: width 0.3s linear;
+}
 `;
 
 /* ============================================================
@@ -422,6 +504,7 @@ export default function App() {
     serviceLevel: "standard",
     notes: "",
   });
+  const [showInteractiveFlow, setShowInteractiveFlow] = useState(false);
 
   function updateField(field, value) {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -444,13 +527,24 @@ export default function App() {
     return <ResultScreen decision={decision} form={form} setScreen={setScreen} />;
   }
 
-  return <HomeScreen setScreen={setScreen} metrics={metrics} />;
+  return (
+    <>
+      <HomeScreen
+        setScreen={setScreen}
+        metrics={metrics}
+        openInteractiveFlow={() => setShowInteractiveFlow(true)}
+      />
+      {showInteractiveFlow && (
+        <InteractiveFlowModal onClose={() => setShowInteractiveFlow(false)} />
+      )}
+    </>
+  );
 }
 
 /* ============================================================
 HOME SCREEN (Premium)
 ============================================================ */
-function HomeScreen({ setScreen, metrics }) {
+function HomeScreen({ setScreen, metrics, openInteractiveFlow }) {
   const [heroRef, heroVisible] = useInView(0.1);
   const [categoryRef, categoryVisible] = useInView();
   const [capabilitiesRef, capabilitiesVisible] = useInView();
@@ -528,8 +622,12 @@ function HomeScreen({ setScreen, metrics }) {
             </p>
             
             <div className={`reveal reveal-delay-4 ${heroVisible ? "in" : ""}`} style={{ display: "flex", gap: 16, flexWrap: "wrap" }}>
-              <button className="btn-primary" onClick={() => setScreen("result")}>See a Real Decision →</button>
-              <button className="btn-secondary" onClick={() => setScreen("assessment")}>Run a Strategic Assessment</button>
+              <button className="btn-primary" onClick={openInteractiveFlow}>
+                See a Real Decision →
+              </button>
+              <button className="btn-secondary" onClick={() => setScreen("assessment")}>
+                Run a Strategic Assessment
+              </button>
             </div>
 
             <div className={`reveal reveal-delay-4 ${heroVisible ? "in" : ""}`} style={{ marginTop: 48, display: "flex", gap: 48, flexWrap: "wrap" }}>
@@ -700,8 +798,8 @@ function HomeScreen({ setScreen, metrics }) {
             See how LogiStart delivers your first decision in under 48 hours.
           </p>
           <div style={{ display: "flex", gap: 16, justifyContent: "center" }}>
-            <button className="btn-primary" onClick={() => setScreen("assessment")}>Request Demo →</button>
-            <button className="btn-secondary">Contact Sales</button>
+            <button className="btn-primary" onClick={openInteractiveFlow}>See a Real Decision →</button>
+            <button className="btn-secondary" onClick={() => setScreen("assessment")}>Run a Strategic Assessment</button>
           </div>
           <div style={{ marginTop: 48, display: "flex", gap: 32, justifyContent: "center", flexWrap: "wrap", fontSize: 13, color: C.gray3 }}>
             <span>✓ No long-term contract</span>
@@ -724,6 +822,307 @@ function HomeScreen({ setScreen, metrics }) {
           <div style={{ fontSize: 12, color: C.gray3 }}>© 2026 LogiStart. All rights reserved.</div>
         </div>
       </footer>
+    </div>
+  );
+}
+
+/* ============================================================
+INTERACTIVE FLOW MODAL
+============================================================ */
+function InteractiveFlowModal({ onClose }) {
+  const [step, setStep] = useState("form"); // form, loading, result, email
+  const [formData, setFormData] = useState({
+    origin: "",
+    destination: "",
+    volume: "",
+    transportType: "FTL",
+    objective: "cost",
+  });
+  const [progress, setProgress] = useState(0);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [confidence, setConfidence] = useState(0);
+  const [email, setEmail] = useState("");
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
+
+  const loadingSteps = [
+    "Analyzing logistics problem...",
+    "Generating network scenarios...",
+    "Benchmarking market rates...",
+    "Evaluating suppliers...",
+    "Running simulations...",
+    "Generating recommendation...",
+  ];
+
+  // Mock decision data based on form inputs
+  const decision = {
+    strategy: "Hybrid Network: 2 DCs + Crossdock",
+    costReduction: "-18%",
+    leadTime: "-1.4 days",
+    serviceLevel: "+7%",
+    confidenceScore: 91,
+    supplier: {
+      name: "XYZ Logistics",
+      score: 92,
+    },
+    reasons: [
+      "Best cost vs service balance",
+      "Below market benchmark",
+      "Lower operational risk",
+      "High on-time delivery (97.2%)",
+    ],
+    scenarios: [
+      { name: "Scenario A", desc: "Single DC model", cost: "$1.42M", risk: "Medium", recommended: false },
+      { name: "Scenario B", desc: "Hybrid network", cost: "$1.24M", risk: "Low", recommended: true },
+      { name: "Scenario C", desc: "Fully distributed", cost: "$1.38M", risk: "Medium", recommended: false },
+    ],
+  };
+
+  useEffect(() => {
+    if (step === "loading") {
+      const totalSteps = loadingSteps.length;
+      let stepIndex = 0;
+      const interval = setInterval(() => {
+        if (stepIndex < totalSteps) {
+          setCurrentStepIndex(stepIndex + 1);
+          setProgress(((stepIndex + 1) / totalSteps) * 100);
+          stepIndex++;
+        } else {
+          clearInterval(interval);
+          setTimeout(() => {
+            setStep("result");
+          }, 300);
+        }
+      }, 500);
+      return () => clearInterval(interval);
+    }
+  }, [step, loadingSteps.length]);
+
+  useEffect(() => {
+    if (step === "result") {
+      let val = 0;
+      const timer = setInterval(() => {
+        if (val < decision.confidenceScore) {
+          val += Math.ceil(decision.confidenceScore / 20);
+          if (val > decision.confidenceScore) val = decision.confidenceScore;
+          setConfidence(val);
+        } else {
+          clearInterval(timer);
+        }
+      }, 50);
+      return () => clearInterval(timer);
+    }
+  }, [step, decision.confidenceScore]);
+
+  const handleSubmitForm = (e) => {
+    e.preventDefault();
+    setStep("loading");
+  };
+
+  const handleEmailSubmit = (e) => {
+    e.preventDefault();
+    setEmailSubmitted(true);
+  };
+
+  const updateForm = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="modal-close" onClick={onClose}>×</button>
+        <div style={{ padding: "32px 40px" }}>
+          {step === "form" && (
+            <>
+              <div className="eyebrow" style={{ paddingLeft: 0, marginBottom: 8 }}>Quick Decision</div>
+              <h2 style={{ fontSize: "28px", marginBottom: 24 }}>Describe your logistics challenge</h2>
+              <form onSubmit={handleSubmitForm}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 24 }}>
+                  <div>
+                    <label className="label-premium">Origin</label>
+                    <input
+                      className="input-premium"
+                      value={formData.origin}
+                      onChange={(e) => updateForm("origin", e.target.value)}
+                      placeholder="e.g. Sao Paulo"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="label-premium">Destination</label>
+                    <input
+                      className="input-premium"
+                      value={formData.destination}
+                      onChange={(e) => updateForm("destination", e.target.value)}
+                      placeholder="e.g. Recife"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="label-premium">Volume (approx.)</label>
+                    <input
+                      className="input-premium"
+                      value={formData.volume}
+                      onChange={(e) => updateForm("volume", e.target.value)}
+                      placeholder="e.g. 500 pallets/month"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="label-premium">Transport Type</label>
+                    <select className="select-premium" value={formData.transportType} onChange={(e) => updateForm("transportType", e.target.value)}>
+                      <option>FTL</option>
+                      <option>LTL</option>
+                      <option>Warehousing</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="label-premium">Objective</label>
+                    <select className="select-premium" value={formData.objective} onChange={(e) => updateForm("objective", e.target.value)}>
+                      <option value="cost">Cost</option>
+                      <option value="service">Service</option>
+                      <option value="speed">Speed</option>
+                    </select>
+                  </div>
+                </div>
+                <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                  <button type="submit" className="btn-primary">Run Strategic Assessment →</button>
+                </div>
+              </form>
+            </>
+          )}
+
+          {step === "loading" && (
+            <div style={{ textAlign: "center", padding: "20px 0" }}>
+              <div className="eyebrow" style={{ paddingLeft: 0, marginBottom: 24 }}>AI Decision Engine</div>
+              <div className="loading-steps">
+                {loadingSteps.map((stepText, idx) => (
+                  <div
+                    key={idx}
+                    className={`loading-step ${idx < currentStepIndex ? "completed" : idx === currentStepIndex ? "active" : ""}`}
+                  >
+                    <span className="step-icon">
+                      {idx < currentStepIndex ? "✓" : idx === currentStepIndex ? "●" : "○"}
+                    </span>
+                    {stepText}
+                  </div>
+                ))}
+              </div>
+              <div className="progress-bar">
+                <div className="progress-fill" style={{ width: `${progress}%` }} />
+              </div>
+            </div>
+          )}
+
+          {step === "result" && (
+            <>
+              <div className="eyebrow" style={{ paddingLeft: 0, marginBottom: 8 }}>Decision Output</div>
+              <h2 style={{ fontSize: "28px", marginBottom: 16 }}>{decision.strategy}</h2>
+
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
+                <div className="card-premium" style={{ padding: "16px", background: C.bgDark }}>
+                  <div style={{ fontSize: 11, color: C.gray3 }}>Cost Reduction</div>
+                  <div className="stat-number" style={{ fontSize: 28, color: C.green }}>{decision.costReduction}</div>
+                </div>
+                <div className="card-premium" style={{ padding: "16px", background: C.bgDark }}>
+                  <div style={{ fontSize: 11, color: C.gray3 }}>Lead Time</div>
+                  <div className="stat-number" style={{ fontSize: 28 }}>{decision.leadTime}</div>
+                </div>
+                <div className="card-premium" style={{ padding: "16px", background: C.bgDark }}>
+                  <div style={{ fontSize: 11, color: C.gray3 }}>Service Level</div>
+                  <div className="stat-number" style={{ fontSize: 28, color: C.green }}>{decision.serviceLevel}</div>
+                </div>
+                <div className="card-premium" style={{ padding: "16px", background: C.bgDark }}>
+                  <div style={{ fontSize: 11, color: C.gray3 }}>Confidence Score</div>
+                  <div className="stat-number" style={{ fontSize: 28 }}>{confidence}/100</div>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 24 }}>
+                <div className="eyebrow" style={{ paddingLeft: 0, marginBottom: 12 }}>Top Supplier</div>
+                <div className="card-premium" style={{ padding: "16px", background: C.goldDim, borderColor: C.gold }}>
+                  <div style={{ fontSize: 18, fontWeight: 600 }}>{decision.supplier.name}</div>
+                  <div style={{ fontSize: 12, color: C.gray2 }}>Score {decision.supplier.score}/100</div>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: 24 }}>
+                <div className="eyebrow" style={{ paddingLeft: 0, marginBottom: 12 }}>Why This Decision</div>
+                <ul style={{ listStyle: "none", padding: 0 }}>
+                  {decision.reasons.map((reason, idx) => (
+                    <li key={idx} style={{ display: "flex", gap: 12, marginBottom: 12 }}>
+                      <span style={{ color: C.gold }}>✓</span>
+                      <span style={{ color: C.gray1 }}>{reason}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              <div>
+                <div className="eyebrow" style={{ paddingLeft: 0, marginBottom: 12 }}>Scenario Comparison</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 }}>
+                  {decision.scenarios.map((scenario) => (
+                    <div
+                      key={scenario.name}
+                      className="card-premium"
+                      style={{
+                        padding: "12px",
+                        background: scenario.recommended ? C.goldDim : C.bgDark,
+                        borderColor: scenario.recommended ? C.gold : C.border,
+                      }}
+                    >
+                      <div style={{ fontWeight: 600, marginBottom: 8 }}>{scenario.name}</div>
+                      <div style={{ fontSize: 12, color: C.gray2 }}>Cost: {scenario.cost}</div>
+                      <div style={{ fontSize: 12, color: C.gray2 }}>Risk: {scenario.risk}</div>
+                      {scenario.recommended && <div style={{ fontSize: 10, color: C.gold, marginTop: 6 }}>Recommended</div>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div style={{ marginTop: 32, display: "flex", justifyContent: "flex-end" }}>
+                <button className="btn-primary" onClick={() => setStep("email")}>
+                  Get Full Report (PDF) →
+                </button>
+              </div>
+            </>
+          )}
+
+          {step === "email" && (
+            <div style={{ textAlign: "center", padding: "20px 0" }}>
+              <div className="eyebrow" style={{ paddingLeft: 0, marginBottom: 16 }}>Get Your Strategic Report</div>
+              {!emailSubmitted ? (
+                <form onSubmit={handleEmailSubmit}>
+                  <p style={{ color: C.gray2, marginBottom: 24 }}>
+                    Enter your email to receive the full strategic report including scenario analysis and supplier recommendations.
+                  </p>
+                  <input
+                    type="email"
+                    className="input-premium"
+                    style={{ marginBottom: 20, maxWidth: 400, marginLeft: "auto", marginRight: "auto" }}
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                  <div>
+                    <button type="submit" className="btn-primary">Send Report →</button>
+                  </div>
+                </form>
+              ) : (
+                <div>
+                  <div style={{ fontSize: 48, marginBottom: 16 }}>📧</div>
+                  <h3 style={{ fontSize: 24, marginBottom: 12 }}>Report sent!</h3>
+                  <p style={{ color: C.gray2, marginBottom: 24 }}>
+                    We've sent the strategic report to <strong>{email}</strong>. Check your inbox.
+                  </p>
+                  <button className="btn-secondary" onClick={onClose}>Close</button>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }

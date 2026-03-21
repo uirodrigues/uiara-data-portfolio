@@ -451,7 +451,7 @@ function Logo() {
   );
 }
 
-function Nav({ onNavigate }) {
+function Nav({ onNavigate, user, onLoginClick }) {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -459,6 +459,11 @@ function Nav({ onNavigate }) {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    window.location.reload();
+  };
 
   return (
     <nav style={{
@@ -477,12 +482,49 @@ function Nav({ onNavigate }) {
       borderBottom: scrolled ? `1px solid ${C.border}` : "none",
       transition: "all 0.4s",
     }}>
-      <Logo />
+      <div onClick={() => onNavigate("home")} style={{ cursor: "pointer" }}>
+        <Logo />
+      </div>
       <div style={{ display: "flex", gap: 12 }}>
-        <button className="btn-secondary" style={{ padding: "10px 24px" }}>Sign In</button>
-        <button className="btn-primary" style={{ padding: "10px 24px" }} onClick={() => onNavigate("assessment")}>
-          Request Demo →
-        </button>
+        {user ? (
+          <>
+            {/* Botão Dashboard – aparece apenas quando logado */}
+            <button 
+              onClick={() => onNavigate("dashboard")}
+              className="btn-secondary" 
+              style={{ padding: "10px 24px" }}
+            >
+              Dashboard
+            </button>
+            <span style={{ color: C.gold, padding: "10px 0", fontSize: 13 }}>
+              {user.email}
+            </span>
+            <button 
+              onClick={handleSignOut}
+              className="btn-secondary" 
+              style={{ padding: "10px 24px" }}
+            >
+              Sign Out
+            </button>
+          </>
+        ) : (
+          <>
+            <button 
+              onClick={onLoginClick}
+              className="btn-secondary" 
+              style={{ padding: "10px 24px" }}
+            >
+              Sign In
+            </button>
+            <button 
+              className="btn-primary" 
+              style={{ padding: "10px 24px" }} 
+              onClick={onLoginClick}
+            >
+              Request Demo →
+            </button>
+          </>
+        )}
       </div>
     </nav>
   );
